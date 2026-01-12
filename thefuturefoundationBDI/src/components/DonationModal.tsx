@@ -19,7 +19,6 @@ const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
   const minAmount = currency === "USD" ? 5 : 2000;
   const isInvalid = amount !== "" && parseFloat(amount) < minAmount;
 
-  // Fonction pour envoyer la confirmation sur WhatsApp
   const handleWhatsAppConfirm = () => {
     const WHATSAPP_NUMBER = "25779186635";
     const message = encodeURIComponent(
@@ -29,34 +28,37 @@ const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-primary/60 backdrop-blur-sm animate-fade-in">
+      {/* Container avec Max-Height pour éviter de déborder de l'écran */}
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[95vh]">
         
-        {/* Header */}
-        <div className="p-6 border-b flex justify-between items-center bg-slate-50">
+        {/* Header - Fixe en haut */}
+        <div className="p-5 md:p-6 border-b flex justify-between items-center bg-slate-50 shrink-0">
           <div>
-            <h3 className="text-xl font-bold text-primary">Faire un Don</h3>
-            <p className="text-sm text-muted-foreground">Soutenez la jeunesse burundaise</p>
+            <h3 className="text-lg md:text-xl font-bold text-primary">Faire un Don</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">Soutenez la jeunesse burundaise</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        {/* Corps de la fenêtre - SCROLLABLE si le contenu dépasse */}
+        <div className="p-5 md:p-6 overflow-y-auto custom-scrollbar space-y-5">
+          
           {/* Choix de la Localisation */}
-          <div className="flex gap-2 p-1 bg-slate-100 rounded-lg">
+          <div className="flex gap-2 p-1 bg-slate-100 rounded-lg shrink-0">
             <button 
               onClick={() => { setCurrency("USD"); setAmount(""); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold transition-all ${currency === "USD" ? "bg-white shadow text-primary" : "text-slate-500"}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-[13px] md:text-sm font-bold transition-all ${currency === "USD" ? "bg-white shadow text-primary" : "text-slate-500"}`}
             >
-              <Globe className="w-4 h-4" /> International ($)
+              <Globe className="w-4 h-4" /> International
             </button>
             <button 
               onClick={() => { setCurrency("BIF"); setAmount(""); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-bold transition-all ${currency === "BIF" ? "bg-white shadow text-primary" : "text-slate-500"}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-[13px] md:text-sm font-bold transition-all ${currency === "BIF" ? "bg-white shadow text-primary" : "text-slate-500"}`}
             >
-              <Home className="w-4 h-4" /> Burundi (Fbu)
+              <Home className="w-4 h-4" /> Burundi
             </button>
           </div>
 
@@ -66,7 +68,7 @@ const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
               <button
                 key={val}
                 onClick={() => setAmount(val)}
-                className={`py-2 border-2 rounded-xl text-sm font-bold transition-all ${amount === val ? "border-secondary bg-secondary/10 text-primary" : "border-slate-100 hover:border-slate-200"}`}
+                className={`py-2 border-2 rounded-xl text-xs md:text-sm font-bold transition-all ${amount === val ? "border-secondary bg-secondary/10 text-primary" : "border-slate-100 hover:border-slate-200"}`}
               >
                 {val}
               </button>
@@ -77,70 +79,62 @@ const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
           <div className="relative">
             <input 
               type="number"
-              placeholder={`Autre montant (min ${minAmount} ${currency === "USD" ? "$" : "Fbu"})`}
+              placeholder={`Montant (min ${minAmount})`}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className={`w-full p-4 pr-12 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${isInvalid ? "border-red-500 focus:ring-red-200" : "border-slate-100 focus:ring-primary/20"}`}
+              className={`w-full p-3 md:p-4 pr-12 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all text-sm md:text-base ${isInvalid ? "border-red-500 focus:ring-red-200" : "border-slate-100 focus:ring-primary/20"}`}
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">
               {currency === "USD" ? "$" : "Fbu"}
             </span>
           </div>
 
           {/* SECTION PAIEMENT */}
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4">
             {currency === "USD" ? (
-              /* International : PayPal / Carte */
               <Button 
                 disabled={isInvalid || !amount}
-                className="w-full h-14 bg-[#0070ba] hover:bg-[#003087] flex gap-3 text-lg"
+                className="w-full h-12 md:h-14 bg-[#0070ba] hover:bg-[#003087] flex gap-3 text-base md:text-lg"
                 onClick={() => window.open("https://paypal.me/votrecompte", "_blank")}
               >
-                <CreditCard className="w-5 h-5" /> Payer par Carte / PayPal
+                <CreditCard className="w-5 h-5" /> Payer par PayPal
               </Button>
             ) : (
-              /* Burundi : Mode de paiement Local */
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fade-in">
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-                  <h4 className="font-bold text-emerald-800 flex items-center gap-2 mb-3 text-sm">
+                  <h4 className="font-bold text-emerald-800 flex items-center gap-2 mb-3 text-[13px]">
                     <Smartphone className="w-4 h-4" /> Instructions de transfert
                   </h4>
                   
-                  {/* Logos des services (Espace pour vos images) */}
                   <div className="grid grid-cols-3 gap-2 mb-4">
-                    <div className="h-10 bg-white rounded border border-emerald-100 flex items-center justify-center p-1 overflow-hidden">
-                       <img src="/lumicash_logo.png" alt="Lumicash" className="h-full object-contain error-fallback" onError={(e) => e.currentTarget.style.display='none'} />
-                    </div>
-                    <div className="h-10 bg-white rounded border border-emerald-100 flex items-center justify-center p-1">
-                       <img src="/beenoti_logo.png" alt="Be-enoti" className="h-full object-contain" onError={(e) => e.currentTarget.style.display='none'} />
-                    </div>
-                    <div className="h-10 bg-white rounded border border-emerald-100 flex items-center justify-center p-1">
-                       <img src="/ihela_logo.png" alt="Ihela" className="h-full object-contain" onError={(e) => e.currentTarget.style.display='none'} />
-                    </div>
+                    {["/lumicash_logo.png", "/beenoti_logo.png", "/ihela_logo.png"].map((img, i) => (
+                      <div key={i} className="h-8 md:h-10 bg-white rounded border border-emerald-100 flex items-center justify-center p-1">
+                         <img src={img} alt="logo" className="h-full object-contain" onError={(e) => e.currentTarget.style.display='none'} />
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="space-y-2 text-[12px] text-emerald-700 leading-relaxed">
-                    <p>• <strong>LUMICASH / ECOCASH :</strong> Composez <strong>*150#</strong> ou <strong>*444#</strong> {'>'} Paiement Marchand {'>'} Code : <strong>[VOTRE_CODE]</strong></p>
-                    <p>• <strong>BE-ENOTI / IHELA :</strong> Transférez vers le compte : <strong>[NUMERO_COMPTE]</strong></p>
-                    <p className="mt-2 pt-2 border-t border-emerald-200 font-bold text-sm">
-                      Montant à envoyer : {amount || "0"} Fbu
+                  <div className="space-y-2 text-[11px] md:text-[12px] text-emerald-700 leading-tight">
+                    <p>• <strong>LUMICASH / ECOCASH :</strong> *150# ou *444#</p>
+                    <p>• <strong>BE-ENOTI / IHELA :</strong> Compte : [NUMERO]</p>
+                    <p className="mt-2 pt-2 border-t border-emerald-200 font-bold text-emerald-900">
+                      Total : {amount || "0"} Fbu
                     </p>
                   </div>
                 </div>
 
-                {/* Bouton WhatsApp pour confirmation */}
                 <Button 
                   disabled={isInvalid || !amount}
                   onClick={handleWhatsAppConfirm}
-                  className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white flex gap-2 h-12"
+                  className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white flex gap-2 h-12 text-sm md:text-base"
                 >
-                  <CheckCircle2 className="w-5 h-5" /> Confirmer mon don (WhatsApp)
+                  <CheckCircle2 className="w-5 h-5" /> Confirmer mon don
                 </Button>
               </div>
             )}
             
-            <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest pt-2">
-              The Future Foundation BDI • La réussite de tous
+            <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest">
+              The Future Foundation BDI
             </p>
           </div>
         </div>
